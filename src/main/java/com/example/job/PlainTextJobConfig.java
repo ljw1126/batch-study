@@ -1,7 +1,9 @@
 package com.example.job;
 
 import com.example.core.entity.PlainText;
+import com.example.core.entity.ResultText;
 import com.example.core.repository.PlainTextRepository;
+import com.example.core.repository.ResultTextRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -30,11 +32,13 @@ public class PlainTextJobConfig {
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
     private final PlainTextRepository plainTextRepository;
+    private final ResultTextRepository resultTextRepository;
 
-    public PlainTextJobConfig(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory, PlainTextRepository plainTextRepository) {
+    public PlainTextJobConfig(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory, PlainTextRepository plainTextRepository, ResultTextRepository resultTextRepository) {
         this.jobBuilderFactory = jobBuilderFactory;
         this.stepBuilderFactory = stepBuilderFactory;
         this.plainTextRepository = plainTextRepository;
+        this.resultTextRepository = resultTextRepository;
     }
 
     @Bean
@@ -79,7 +83,7 @@ public class PlainTextJobConfig {
     @Bean
     public ItemWriter<String> plainTextWriter() {
         return items -> {
-            items.forEach(System.out::println);
+            items.forEach(item -> resultTextRepository.save(new ResultText(null, item)));
             System.out.println("==== chunk is finished");
         };
     }
