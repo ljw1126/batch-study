@@ -20,4 +20,12 @@ public class PlainText {
 
     @Column(nullable = false)
     private String text;
+
+    public PlainText() {
+    }
+
+    public PlainText(Long id, String text) {
+        this.id = id;
+        this.text = text;
+    }
 }
