@@ -1,25 +1,18 @@
 spring:
-  batch:
-    job:
-      name: ${job.name:NONE}
-
----
-spring:
   profiles:
     active: mysql
+  batch:
+    job:
+      names: ${job.name:NONE}
 
 
 ---
 spring:
   config:
     activate:
-      on-profile: local
-  datasource:
-    hikari:
-      jdbc-url: jdbc:h2:mem:~/batch
-      username: sa
-      password:
-      driver-class-name: org.h2.Driver
+      on-profile: test
+  jpa:
+    database: h2
 
 ---
 spring:
@@ -28,24 +21,19 @@ spring:
       on-profile: mysql
   datasource:
     hikari:
+      driver-class-name: com.mysql.cj.jdbc.Driver
       jdbc-url: jdbc:mysql://localhost:3306/batch_study
       username: tester
       password: tester
-      driver-class-name: com.mysql.jdbc.Driver
+  jpa:
+    show-sql: true
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
   batch:
     jdbc:
       initialize-schema: never
 
----
-
-spring:
-  batch:
-    job:
-      enabled: true
-  jpa:
-    hibernate:
-      ddl-auto: create
-    show-sql: true
 
 
 
