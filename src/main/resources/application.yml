@@ -1,7 +1,13 @@
 spring:
-  config:
-    activate:
-      on-profile: mysql
+  batch:
+    job:
+      name: ${job.name:NONE}
+
+---
+spring:
+  profiles:
+    active: mysql
+
 
 ---
 spring:
@@ -26,6 +32,20 @@ spring:
       username: tester
       password: tester
       driver-class-name: com.mysql.jdbc.Driver
+  batch:
+    jdbc:
+      initialize-schema: never
 
 ---
+
+spring:
+  batch:
+    job:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+
+
 
