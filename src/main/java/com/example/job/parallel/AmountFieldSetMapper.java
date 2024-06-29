@@ -1,4 +1,4 @@
-package com.example.parallel;
+package com.example.job.parallel;
 
 import com.example.dto.AmoutDto;
 import org.springframework.batch.item.file.mapping.FieldSetMapper;
