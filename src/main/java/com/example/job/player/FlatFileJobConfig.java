@@ -10,16 +10,21 @@ import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.adapter.ItemProcessorAdapter;
 import org.springframework.batch.item.file.FlatFileItemReader;
+import org.springframework.batch.item.file.FlatFileItemWriter;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
+import org.springframework.batch.item.file.builder.FlatFileItemWriterBuilder;
+import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
+import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.PathResource;
+
+import java.io.File;
+import java.io.IOException;
 
 @Configuration
 public class FlatFileJobConfig {
@@ -42,22 +47,15 @@ public class FlatFileJobConfig {
 
     @Bean
     @JobScope
-    public Step flatFileStep(FlatFileItemReader<PlayerDto> playerDtoFlatFileItemReader, ItemProcessorAdapter<PlayerDto, PlayerSalaryDto> playerSalaryItemProcessorAdapter) {
+    public Step flatFileStep(FlatFileItemReader<PlayerDto> playerDtoFlatFileItemReader,
+                             ItemProcessorAdapter<PlayerDto, PlayerSalaryDto> playerSalaryItemProcessorAdapter,
+                             FlatFileItemWriter<PlayerSalaryDto> playerFileItemWriter) {
         return stepBuilderFactory.get("flatFileStep")
                 .<PlayerDto, PlayerSalaryDto>chunk(5)
                 .reader(playerDtoFlatFileItemReader)
                 .processor(playerSalaryItemProcessorAdapter)
-                .writer(items -> items.forEach(System.out::println))
+                .writer(playerFileItemWriter)
                 .build();
-    }
-
-    @StepScope
-    @Bean
-    public ItemProcessorAdapter<PlayerDto, PlayerSalaryDto> playerSalaryItemProcessorAdapter(PlayerSalaryService playerSalaryService) {
-        ItemProcessorAdapter<PlayerDto, PlayerSalaryDto> adapter = new ItemProcessorAdapter<>();
-        adapter.setTargetObject(playerSalaryService);
-        adapter.setTargetMethod("calcSalary");
-        return adapter;
     }
 
     @Bean
@@ -71,4 +69,36 @@ public class FlatFileJobConfig {
                 .resource(new ClassPathResource("samples/players.txt"))
                 .build();
     }
+
+    @Bean
+    @StepScope
+    public ItemProcessorAdapter<PlayerDto, PlayerSalaryDto> playerSalaryItemProcessorAdapter(PlayerSalaryService playerSalaryService) {
+        ItemProcessorAdapter<PlayerDto, PlayerSalaryDto> adapter = new ItemProcessorAdapter<>();
+        adapter.setTargetObject(playerSalaryService);
+        adapter.setTargetMethod("calcSalary");
+        return adapter;
+    }
+
+    @Bean
+    @StepScope
+    public FlatFileItemWriter<PlayerSalaryDto> playerFileItemWriter() throws IOException {
+        BeanWrapperFieldExtractor<PlayerSalaryDto> fieldExtractor = new BeanWrapperFieldExtractor<>();
+        fieldExtractor.setNames(new String[]{"id", "firstName", "lastName", "salary"});
+        fieldExtractor.afterPropertiesSet();
+
+        DelimitedLineAggregator<PlayerSalaryDto> lineAggregator = new DelimitedLineAggregator<>();
+        lineAggregator.setDelimiter("\t");
+        lineAggregator.setFieldExtractor(fieldExtractor);
+
+        // 파일 생성, 덮어씌우기
+        new File("src/main/resources/samples/player-salary-convert.txt").createNewFile();
+        FileSystemResource resource = new FileSystemResource("src/main/resources/samples/player-salary-convert.txt");
+
+        return new FlatFileItemWriterBuilder<PlayerSalaryDto>()
+                .name("playerFileItemWriter")
+                .resource(resource)
+                .lineAggregator(lineAggregator)
+                .build();
+    }
+
 }
