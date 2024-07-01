@@ -32,7 +32,7 @@ import static com.example.config.DataSourceConfiguration.READER_DATASOURCE;
         transactionManagerRef = MASTER_TX_MANAGER
 )
 public class BatchJpaConfiguration {
-    public static final String PACKAGE = "com.example.jojoldu.entity"; // entity와 repository
+    public static final String PACKAGE = "com.example"; // entity와 repository
     public static final String MASTER_ENTITY_MANAGER_FACTORY = "entityManagerFactory";
     public static final String READER_ENTITY_MANAGER_FACTORY = "readerEntityManagerFactory";
 

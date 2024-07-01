@@ -65,14 +65,14 @@ public class BatchJdbcTestConfiguration {
     public Step batchJdbcUnitTestJobStep() throws Exception {
         return stepBuilderFactory.get("batchJdbcUnitTestJobStep")
                 .<SalesSum, SalesSum>chunk(chunkSize)
-                .reader(batchOnlyJdbcReaderJobReader(null))
+                .reader(batchJdbcUnitTestJobReader(null))
                 .writer(batchJdbcUnitTestJobWriter())
                 .build();
     }
 
     @Bean
     @StepScope
-    public JdbcPagingItemReader<SalesSum> batchOnlyJdbcReaderJobReader(
+    public JdbcPagingItemReader<SalesSum> batchJdbcUnitTestJobReader(
             @Value("#{jobParameters[orderDate]}") String orderDate
     ) throws Exception {
         Map<String, Object> params = new Hashtable<>();
@@ -87,7 +87,7 @@ public class BatchJdbcTestConfiguration {
         queryProvider.setSortKey("order_date"); // ASCENDING 오름차순
 
         return new JdbcPagingItemReaderBuilder<SalesSum>()
-                .name("batchOnlyJdbcReaderJobReader")
+                .name("batchJdbcUnitTestJobReader")
                 .pageSize(chunkSize)
                 .fetchSize(chunkSize)
                 .dataSource(dataSource)
