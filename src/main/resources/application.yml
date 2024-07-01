@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: mysql
+    active: test
   batch:
     job:
       names: ${job.name:NONE}
