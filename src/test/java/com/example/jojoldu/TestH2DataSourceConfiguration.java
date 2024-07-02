@@ -1,4 +1,4 @@
-package com.example.jojoldu.unittest;
+package com.example.jojoldu;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;

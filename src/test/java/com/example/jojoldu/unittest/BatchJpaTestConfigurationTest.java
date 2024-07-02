@@ -1,5 +1,6 @@
 package com.example.jojoldu.unittest;
 
+import com.example.jojoldu.TestBatchConfig;
 import com.example.jojoldu.entity.Sales;
 import com.example.jojoldu.entity.SalesSum;
 import com.example.jojoldu.entity.SalesRepository;

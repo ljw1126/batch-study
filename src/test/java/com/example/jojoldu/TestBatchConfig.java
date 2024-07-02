@@ -1,4 +1,4 @@
-package com.example.jojoldu.unittest;
+package com.example.jojoldu;
 
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

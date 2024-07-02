@@ -1,5 +1,6 @@
 package com.example.jojoldu.unittest;
 
+import com.example.jojoldu.TestH2DataSourceConfiguration;
 import com.example.jojoldu.entity.SalesSum;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
