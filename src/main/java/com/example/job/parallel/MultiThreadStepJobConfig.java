@@ -67,7 +67,9 @@ public class MultiThreadStepJobConfig {
     // 멀티스레드 실행
     @Bean
     public TaskExecutor taskExecutor() {
-        return new SimpleAsyncTaskExecutor("spring-batch-test-executor");
+        SimpleAsyncTaskExecutor taskExecutor = new SimpleAsyncTaskExecutor("spring-batch-test-executor");
+        taskExecutor.setConcurrencyLimit(4);
+        return taskExecutor;
     }
 
     @Bean
@@ -112,7 +114,6 @@ public class MultiThreadStepJobConfig {
 
         return new FlatFileItemWriterBuilder<AmoutDto>()
                 .name("amountFileItemWriter")
-                .resource(new PathResource(""))
                 .lineAggregator(lineAggregator)
                 .resource(resource)
                 .build();
